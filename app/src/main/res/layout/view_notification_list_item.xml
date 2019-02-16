@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable name="viewModel" type="com.xforge.mp3forge.vm.NotificationItemViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+        <TextView
+            android:id="@+id/index"
+            android:layout_width="40dp"
+            android:layout_height="0dp"
+            android:text="@{viewModel.index}"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="1"/>
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:text="@{viewModel.title}"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/description"
+            app:layout_constraintStart_toEndOf="@+id/index"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Album"/>
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:text="@{viewModel.description}"
+            app:layout_constraintTop_toBottomOf="@+id/title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/index"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Album Description"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/notification_text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notification Grid"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/notification_text2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+        </TextView>
+
+        <TextView
+            android:id="@+id/notification_text2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notification Grid"
+            app:layout_constraintTop_toBottomOf="@+id/notification_text1"
+            app:layout_constraintBottom_toTopOf="@+id/notification_text3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+        </TextView>
+
+        <TextView
+            android:id="@+id/notification_text3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notification Grid"
+            app:layout_constraintTop_toBottomOf="@+id/notification_text2"
+            app:layout_constraintBottom_toTopOf="@+id/notification_text4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+        </TextView>
+
+        <TextView
+            android:id="@+id/notification_text4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notification Grid"
+            app:layout_constraintTop_toBottomOf="@+id/notification_text3"
+            app:layout_constraintBottom_toTopOf="@+id/notification_text5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+        </TextView>
+
+
+        <TextView
+            android:id="@+id/notification_text5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notification Grid"
+            app:layout_constraintTop_toBottomOf="@+id/notification_text4"
+            app:layout_constraintBottom_toTopOf="@+id/notification_text6"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+        </TextView>
+
+
+        <TextView
+            android:id="@+id/notification_text6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notification Grid"
+            app:layout_constraintTop_toBottomOf="@+id/notification_text5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+        </TextView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
