@@ -12,6 +12,6 @@ import dagger.android.support.AndroidSupportInjectionModule;
 @Component(modules = {
         AndroidSupportInjectionModule.class,
         ApplicationModule.class,
-        ViewModule.class})
+        AndroidInjectionModule.class})
 public interface ApplicationComponent extends AndroidInjector<Mp3ForgeApplication> {
 }

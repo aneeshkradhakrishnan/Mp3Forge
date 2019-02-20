@@ -1,15 +1,17 @@
 package com.xforge.mp3forge.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.xforge.mp3forge.R;
 import com.xforge.mp3forge.databinding.ActivityMainBinding;
-import com.xforge.mp3forge.fragment.PlayerFragment;
 import com.xforge.mp3forge.fragment.HomeFragment;
 import com.xforge.mp3forge.fragment.PlayListFragment;
+import com.xforge.mp3forge.fragment.PlayerFragment;
 import com.xforge.mp3forge.player.MediaPlayerAction;
 import com.xforge.mp3forge.player.MediaPlayerService;
 import com.xforge.mp3forge.vm.MainViewModel;
@@ -18,6 +20,8 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -70,8 +74,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
+        checkAppPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         Intent stopIntent = new Intent(MainActivity.this, MediaPlayerService.class);
         stopIntent.setAction(MediaPlayerAction.STOP_FOREGROUND);
@@ -80,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
 
         Intent startIntent = new Intent(MainActivity.this, MediaPlayerService.class);
@@ -112,4 +117,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void checkAppPermissions(String permission) {
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{permission}, 0);
+        }
+    }
 }
