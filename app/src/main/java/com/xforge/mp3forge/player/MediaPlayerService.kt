@@ -67,7 +67,7 @@ class MediaPlayerService : Service() {
                 startForeground(FOREGROUND_SERVICE, createNotification("Song Title ${--songIncrement}", "Pause"))
             }
             intent.action == MediaPlayerAction.PLAY_FOREGROUND -> {
-                mediaPlayerThread.play(playListViewModel.currentPlayingSong())
+                playListViewModel.currentPlayingSong().subscribe(mediaPlayerThread::play)
                 startForeground(FOREGROUND_SERVICE, createNotification("Song Title $songIncrement", "Pause"))
             }
             intent.action == MediaPlayerAction.NEXT_FOREGROUND -> {
@@ -78,7 +78,7 @@ class MediaPlayerService : Service() {
                 stopSelf()
             }
             intent.action == MediaPlayerAction.PLAY -> {
-                mediaPlayerThread.play(playListViewModel.currentPlayingSong())
+                playListViewModel.currentPlayingSong().subscribe(mediaPlayerThread::play)
             }
             intent.action == MediaPlayerAction.PAUSE -> {
                 mediaPlayerThread.stopPlaying()

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable name="viewModel" type="com.xforge.mp3forge.vm.PlayerViewModel"/>
@@ -10,13 +11,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <SurfaceView
+        <ImageView
             android:id="@+id/album_art"
             android:layout_width="0dp"
-            android:layout_height="400dp"
+            android:layout_height="0dp"
+            android:scaleType="fitCenter"
+            app:imageBitmap="@{viewModel.songAlbumArt}"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/guideline_center"/>
+
+        <TextView
+            android:id="@+id/songTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.songTitle}"
+            app:layout_constraintTop_toBottomOf="@+id/album_art"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Title"/>
 
         <ImageButton
             android:id="@+id/previous"
@@ -72,6 +85,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/forward"
             app:layout_constraintEnd_toEndOf="parent"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/guideline_center"
+            app:layout_constraintGuide_percent=".5"
+            android:orientation="horizontal"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

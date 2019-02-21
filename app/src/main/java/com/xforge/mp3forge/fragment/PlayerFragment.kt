@@ -15,21 +15,23 @@ import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
 class PlayerFragment : Fragment() {
-    private lateinit var viewModel:PlayerViewModel
     private lateinit var binding:FragmentPlayerBinding
 
     @Inject
     lateinit var playListViewModel: PlayListViewModel
 
+    @Inject
+    lateinit var viewModel: PlayerViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidSupportInjection.inject(this)
         super.onCreate(savedInstanceState)
+        viewModel.setContext(context)
         playListViewModel.initPlayList(Environment.getExternalStorageDirectory().absolutePath + "/Download")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = inflate(inflater, R.layout.fragment_player, container, false)
-        viewModel = PlayerViewModel(context)
         binding.viewModel = viewModel
         return binding.root
     }

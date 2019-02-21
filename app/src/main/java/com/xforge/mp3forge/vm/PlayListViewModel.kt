@@ -1,5 +1,7 @@
 package com.xforge.mp3forge.vm
 
+import android.media.MediaMetadataRetriever
+import io.reactivex.Single
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,8 +19,14 @@ class PlayListViewModel @Inject constructor() {
         findSongs(dir)
     }
 
-    fun currentPlayingSong(): String {
-        return playList[0]
+    fun currentPlayingSong(): Single<String> {
+        return Single.just(playList[0])
+    }
+
+    fun fetchSongMetaData(path: String): Single<MediaMetadataRetriever> {
+        val metaData = MediaMetadataRetriever()
+        metaData.setDataSource(path)
+        return Single.just(metaData)
     }
 
     private fun findSongs(dir: String) {
