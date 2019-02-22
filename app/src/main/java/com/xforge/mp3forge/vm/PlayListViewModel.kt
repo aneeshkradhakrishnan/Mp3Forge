@@ -1,5 +1,7 @@
 package com.xforge.mp3forge.vm
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -44,8 +46,22 @@ class PlayListViewModel @Inject constructor() {
     }
 
 
-    fun fetchSongMetaData(path: String): Observable<MediaMetadataRetriever> {
-        return Observable.just(getMetaData(path))
+    fun getSongInformation(path: String): Observable<SongViewModel> {
+        val mediaMetadataRetriever: MediaMetadataRetriever = getMetaData(path)
+
+        var albumArt: Bitmap? = null
+        val data = mediaMetadataRetriever.embeddedPicture
+        if (data != null) {
+            albumArt = BitmapFactory.decodeByteArray(data, 0, data!!.size)
+        }
+
+        val songViewModel = SongViewModel(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
+                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),
+                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
+                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toLong(),
+                albumArt
+        )
+        return Observable.just(songViewModel)
     }
 
     fun getCurrentSongTitle(): String {

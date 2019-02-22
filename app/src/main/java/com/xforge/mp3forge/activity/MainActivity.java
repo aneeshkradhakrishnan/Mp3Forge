@@ -93,6 +93,14 @@ public class MainActivity extends AppCompatActivity {
         startService(startIntent);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Intent startIntent = new Intent(MainActivity.this, MediaPlayerService.class);
+        startIntent.setAction(MediaPlayerAction.STOP);
+        startService(startIntent);
+    }
+
     public void showTab(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();

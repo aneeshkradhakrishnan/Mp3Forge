@@ -3,10 +3,14 @@ package com.xforge.mp3forge.application;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Service;
+import android.content.Intent;
 
+import com.xforge.mp3forge.activity.MainActivity;
 import com.xforge.mp3forge.dagger.ApplicationComponent;
 import com.xforge.mp3forge.dagger.ApplicationModule;
 import com.xforge.mp3forge.dagger.DaggerApplicationComponent;
+import com.xforge.mp3forge.player.MediaPlayerAction;
+import com.xforge.mp3forge.player.MediaPlayerService;
 
 import javax.inject.Inject;
 
