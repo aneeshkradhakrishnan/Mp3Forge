@@ -2,7 +2,6 @@ package com.xforge.mp3forge.player
 
 interface MediaPlayerAction {
     companion object {
-        const val INIT_PLAYER = "com.xforge.mp3forge.player.init"
         const val MAIN = "com.xforge.mp3forge.player.main"
         const val PLAY = "com.xforge.mp3forge.player.play"
         const val STOP = "com.xforge.mp3forge.player.stop"
@@ -17,7 +16,5 @@ interface MediaPlayerAction {
         const val PAUSE_FOREGROUND = "com.xforge.mp3forge.player.foreground.pause"
         const val NEXT_FOREGROUND = "com.xforge.mp3forge.player.foreground.next"
         const val PREV_FOREGROUND = "com.xforge.mp3forge.player.foreground.prev"
-        const val FOWD_FOREGROUND = "com.xforge.mp3forge.player.foreground.ford"
-        const val REWD_FOREGROUND = "com.xforge.mp3forge.player.foreground.rewd"
     }
 }

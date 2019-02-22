@@ -16,21 +16,15 @@ class MediaPlayerThread(val context: Context) :
         playerHandler = Handler()
     }
 
-    fun initPlayer() {
-        playerHandler.post {
-            if (mediaPlayer == null) {
-                mediaPlayer = MediaPlayer()
-            }
-        }
-    }
-
     fun play(path: String) {
         playerHandler.post {
             if (mediaPlayer == null) {
                 mediaPlayer = MediaPlayer()
-            }
-            if (!mediaPlayer!!.isPlaying) {
-                next(path)
+                mediaPlayer?.setDataSource(path)
+                mediaPlayer?.prepare()
+                mediaPlayer?.start()
+            } else if (!mediaPlayer!!.isPlaying) {
+                mediaPlayer?.start()
             }
         }
     }
@@ -43,22 +37,33 @@ class MediaPlayerThread(val context: Context) :
         }
     }
 
+    fun next(path: String) {
+        playerHandler.post {
+            if (mediaPlayer == null) {
+                mediaPlayer = MediaPlayer()
+            }
+
+            if (mediaPlayer!!.isPlaying) {
+                mediaPlayer?.stop()
+            }
+
+            mediaPlayer?.reset()
+            mediaPlayer?.setDataSource(path)
+            mediaPlayer?.prepare()
+            mediaPlayer?.start()
+        }
+    }
+
     fun forward(milliSecond: Int) {
         playerHandler.post {
-            mediaPlayer?.seekTo(milliSecond)
+            mediaPlayer?.seekTo(mediaPlayer?.currentPosition!!.plus(milliSecond))
+            mediaPlayer?.start()
         }
     }
 
     fun rewind(milliSecond: Int) {
         playerHandler.post {
-            mediaPlayer?.seekTo(milliSecond)
-        }
-    }
-
-    fun next(path: String) {
-        playerHandler.post {
-            mediaPlayer?.setDataSource(path)
-            mediaPlayer?.prepare()
+            mediaPlayer?.seekTo(mediaPlayer?.currentPosition!!.minus(milliSecond))
             mediaPlayer?.start()
         }
     }

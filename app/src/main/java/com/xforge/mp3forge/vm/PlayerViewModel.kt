@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import com.xforge.mp3forge.R
 import com.xforge.mp3forge.player.MediaPlayerAction
@@ -18,32 +19,39 @@ class PlayerViewModel @Inject constructor(private val playListViewModel: PlayLis
 
     val songTitle: ObservableField<String> = ObservableField()
     val songAlbumArt: ObservableField<Bitmap> = ObservableField()
+    val isPlaying: ObservableBoolean = ObservableBoolean(false)
 
-    fun play() {
-        val startIntent = Intent(context, MediaPlayerService::class.java)
-        startIntent.action = MediaPlayerAction.PLAY
-        context?.startService(startIntent)
-        playListViewModel.currentPlayingSong()
+    init {
+        playListViewModel.songChangeNotified()
                 .flatMap { path: String -> playListViewModel.fetchSongMetaData(path) }
                 .subscribe { metaData -> this.setSongMetaData(metaData) }
     }
 
-    fun forward() {
+    fun play() {
+        if(!isPlaying.get()) {
+            mediaPlyerAction(MediaPlayerAction.PLAY)
+            isPlaying.set(true)
+        } else {
+            mediaPlyerAction(MediaPlayerAction.PAUSE)
+            isPlaying.set(false)
+        }
 
+    }
+
+    fun forward() {
+        mediaPlyerAction(MediaPlayerAction.FOWD)
     }
 
     fun rewind() {
-
+        mediaPlyerAction(MediaPlayerAction.REWD)
     }
 
     fun next() {
-        val pauseIntent = Intent(context, MediaPlayerService::class.java)
-        pauseIntent.action = MediaPlayerAction.PAUSE
-        context?.startService(pauseIntent)
+        mediaPlyerAction(MediaPlayerAction.NEXT)
     }
 
     fun prev() {
-
+        mediaPlyerAction(MediaPlayerAction.PREV)
     }
 
     fun setContext(context: Context?) {
@@ -64,5 +72,11 @@ class PlayerViewModel @Inject constructor(private val playListViewModel: PlayLis
 
     private fun getDefaultAlbumArt(): Bitmap {
         return BitmapFactory.decodeResource(context?.resources, R.drawable.vinyl_logo)
+    }
+
+    private fun mediaPlyerAction(action: String) {
+        val intent = Intent(context, MediaPlayerService::class.java)
+        intent.action = action
+        context?.startService(intent)
     }
 }

@@ -57,7 +57,7 @@
             android:id="@+id/play_pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_play"
+            android:src="@{viewModel.isPlaying ? @android:drawable/ic_media_pause : @android:drawable/ic_media_play}"
             android:onClick="@{() -> viewModel.play()}"
             app:layout_constraintTop_toBottomOf="@+id/album_art"
             app:layout_constraintBottom_toBottomOf="parent"
