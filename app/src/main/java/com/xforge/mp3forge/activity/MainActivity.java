@@ -14,6 +14,7 @@ import com.xforge.mp3forge.fragment.PlayListFragment;
 import com.xforge.mp3forge.fragment.PlayerFragment;
 import com.xforge.mp3forge.player.MediaPlayerAction;
 import com.xforge.mp3forge.player.MediaPlayerService;
+import com.xforge.mp3forge.player.PlayerControls;
 import com.xforge.mp3forge.vm.MainViewModel;
 
 import javax.inject.Inject;
@@ -37,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Inject
     MainViewModel mainViewModel;
+
+    @Inject
+    PlayerControls playerControls;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -71,34 +75,28 @@ public class MainActivity extends AppCompatActivity {
         playListFragment = new PlayListFragment();
         playListFragment.setFm(getSupportFragmentManager());
         showTab(homeFragment);
+        Intent stopIntent = new Intent(MainActivity.this, MediaPlayerService.class);
+        stopIntent.setAction(MediaPlayerAction.START_SERVICE);
+        startService(stopIntent);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         checkAppPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        Intent stopIntent = new Intent(MainActivity.this, MediaPlayerService.class);
-        stopIntent.setAction(MediaPlayerAction.STOP_FOREGROUND);
-        startService(stopIntent);
-
+        playerControls.stopForground();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
-        Intent startIntent = new Intent(MainActivity.this, MediaPlayerService.class);
-        startIntent.setAction(MediaPlayerAction.START_FOREGROUND);
-        startService(startIntent);
+       playerControls.startForground();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Intent startIntent = new Intent(MainActivity.this, MediaPlayerService.class);
-        startIntent.setAction(MediaPlayerAction.STOP);
-        startService(startIntent);
+        playerControls.stop();
     }
 
     public void showTab(Fragment fragment) {

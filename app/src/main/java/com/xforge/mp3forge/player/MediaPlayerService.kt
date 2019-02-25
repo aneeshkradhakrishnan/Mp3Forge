@@ -21,6 +21,9 @@ class MediaPlayerService : Service() {
     @Inject
     lateinit var playListViewModel: PlayListViewModel
 
+    @Inject
+    lateinit var playerControls: PlayerControls
+
     private lateinit var mediaPlayerThread: MediaPlayerThread
 
     private lateinit var pendingIntent: PendingIntent
@@ -29,6 +32,8 @@ class MediaPlayerService : Service() {
     private lateinit var playIntent: PendingIntent
     private lateinit var pauseIntent: PendingIntent
     private lateinit var nextIntent: PendingIntent
+    private lateinit var nm: NotificationManager
+    private var lastNotification: Notification? = null
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -37,6 +42,7 @@ class MediaPlayerService : Service() {
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
+        playerControls.setMediaPlayerService(this)
         playListViewModel.initPlayList(Environment.getExternalStorageDirectory().absolutePath + "/Download")
 
         notificationIntent = Intent(this, MainActivity::class.java)
@@ -47,9 +53,9 @@ class MediaPlayerService : Service() {
         playIntent = createServiceAction(MediaPlayerAction.PLAY_FOREGROUND)
         nextIntent = createServiceAction(MediaPlayerAction.NEXT_FOREGROUND)
         pauseIntent = createServiceAction(MediaPlayerAction.PAUSE_FOREGROUND)
+        nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            var nm: NotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             nm.createNotificationChannel(NotificationChannel(NOTIFICATION_CHANNEL, "Mp3 Forge Service", NotificationManager.IMPORTANCE_DEFAULT));
         }
 
@@ -59,52 +65,73 @@ class MediaPlayerService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         when {
-            intent.action == MediaPlayerAction.START_FOREGROUND -> {
-                startForeground(FOREGROUND_SERVICE, createNotification(playIntent, "Play"))
-            }
             intent.action == MediaPlayerAction.PREV_FOREGROUND -> {
-                playListViewModel.previousSong().subscribe(mediaPlayerThread::next)
-                startForeground(FOREGROUND_SERVICE, createNotification(pauseIntent, "Pause"))
+                previous()
+                startServiceAndNotification(createNotification(pauseIntent, "Pause"))
             }
             intent.action == MediaPlayerAction.PLAY_FOREGROUND -> {
-                playListViewModel.currentPlayingSong().subscribe(mediaPlayerThread::play)
-                startForeground(FOREGROUND_SERVICE, createNotification(pauseIntent, "Pause"))
+                play()
+                startServiceAndNotification(createNotification(pauseIntent, "Pause"))
             }
             intent.action == MediaPlayerAction.PAUSE_FOREGROUND -> {
-                mediaPlayerThread.pause()
-                startForeground(FOREGROUND_SERVICE, createNotification(playIntent, "Play"))
+                this.pause()
+                startServiceAndNotification(createNotification(playIntent, "Play"))
             }
             intent.action == MediaPlayerAction.NEXT_FOREGROUND -> {
-                playListViewModel.nextSong().subscribe(mediaPlayerThread::next)
-                startForeground(FOREGROUND_SERVICE, createNotification(pauseIntent, "Pause"))
-            }
-            intent.action == MediaPlayerAction.STOP_FOREGROUND -> {
-                stopForeground(true)
-                stopSelf()
-            }
-            intent.action == MediaPlayerAction.PLAY -> {
-                playListViewModel.currentPlayingSong().subscribe(mediaPlayerThread::play)
-            }
-            intent.action == MediaPlayerAction.PAUSE -> {
-                mediaPlayerThread.pause()
-            }
-            intent.action == MediaPlayerAction.STOP -> {
-                mediaPlayerThread.stopPlaying()
-            }
-            intent.action == MediaPlayerAction.PREV -> {
-                playListViewModel.previousSong().subscribe(mediaPlayerThread::next)
-            }
-            intent.action == MediaPlayerAction.NEXT -> {
-                playListViewModel.nextSong().subscribe(mediaPlayerThread::next)
-            }
-            intent.action == MediaPlayerAction.FOWD -> {
-                mediaPlayerThread.forward(5000)
-            }
-            intent.action == MediaPlayerAction.REWD -> {
-                mediaPlayerThread.rewind(5000)
+                next()
+                startServiceAndNotification(createNotification(pauseIntent, "Pause"))
             }
         }
         return Service.START_STICKY
+    }
+
+    fun startPlayerForeground() {
+        startServiceAndNotification(createNotification(playIntent, "Play"))
+    }
+
+    fun stopPlayerForeground() {
+        stopForeground(true)
+        stopSelf()
+    }
+
+    fun play() {
+        playListViewModel.currentPlayingSong().subscribe(mediaPlayerThread::play)
+    }
+
+    fun pause() {
+        mediaPlayerThread.pause()
+    }
+
+    fun stop() {
+        mediaPlayerThread.stopPlaying()
+    }
+
+    fun previous() {
+        playListViewModel.previousSong().subscribe(mediaPlayerThread::next)
+    }
+
+    fun next() {
+        playListViewModel.nextSong().subscribe(mediaPlayerThread::next)
+    }
+
+    fun forward(milliSecond: Int) {
+        mediaPlayerThread.forward(milliSecond)
+    }
+
+    fun rewind(milliSecond: Int) {
+        mediaPlayerThread.rewind(milliSecond)
+    }
+
+    private fun startServiceAndNotification(notification: Notification) {
+        if (null == lastNotification) {
+            lastNotification = notification
+            startForeground(FOREGROUND_SERVICE, notification)
+            return
+        }
+
+        lastNotification = notification
+        nm.notify(FOREGROUND_SERVICE, notification)
+
     }
 
     private fun createServiceAction(action: String): PendingIntent {

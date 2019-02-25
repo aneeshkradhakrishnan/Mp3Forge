@@ -1,28 +1,26 @@
 package com.xforge.mp3forge.vm
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.AudioManager
+import android.media.MediaMetadata
+import android.media.session.MediaSession
+import android.media.session.PlaybackState
+import android.os.SystemClock
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import com.xforge.mp3forge.R
-import com.xforge.mp3forge.player.MediaPlayerAction
-import com.xforge.mp3forge.player.MediaPlayerService
+import com.xforge.mp3forge.player.PlayerControls
 import javax.inject.Inject
-import android.os.SystemClock
-import android.media.session.PlaybackState
-import android.media.MediaMetadata
-import android.media.session.MediaSession
-import android.media.AudioManager
 
 
-class PlayerViewModel @Inject constructor(private val playListViewModel: PlayListViewModel) {
+class PlayerViewModel @Inject constructor(private val playListViewModel: PlayListViewModel, private val playerControls: PlayerControls) {
 
     private var context: Context? = null
     private var audioManager: AudioManager? = null
     private var mediaSession: MediaSession? = null
-    private val defaultAlbumArt = getDefaultAlbumArt()
+    private var defaultAlbumArt: Bitmap? = null
 
     val songTitle: ObservableField<String> = ObservableField()
     val songAlbumArt: ObservableField<Bitmap> = ObservableField()
@@ -36,33 +34,34 @@ class PlayerViewModel @Inject constructor(private val playListViewModel: PlayLis
 
     fun play() {
         if (!isPlaying.get()) {
-            mediaPlayerAction(MediaPlayerAction.PLAY)
+            playerControls.play()
             isPlaying.set(true)
         } else {
-            mediaPlayerAction(MediaPlayerAction.PAUSE)
+            playerControls.pause()
             isPlaying.set(false)
         }
 
     }
 
     fun forward() {
-        mediaPlayerAction(MediaPlayerAction.FOWD)
+        playerControls.forward(10000)
     }
 
     fun rewind() {
-        mediaPlayerAction(MediaPlayerAction.REWD)
+        playerControls.rewind(10000)
     }
 
     fun next() {
-        mediaPlayerAction(MediaPlayerAction.NEXT)
+        playerControls.next()
     }
 
     fun prev() {
-        mediaPlayerAction(MediaPlayerAction.PREV)
+        playerControls.previous()
     }
 
     fun setContext(context: Context?) {
         this.context = context
+        defaultAlbumArt = getDefaultAlbumArt()
         songAlbumArt.set(getDefaultAlbumArt())
         initAudioManager()
     }
@@ -97,6 +96,8 @@ class PlayerViewModel @Inject constructor(private val playListViewModel: PlayLis
                 .putString(MediaMetadata.METADATA_KEY_ALBUM, songViewModel.album)
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, songViewModel.duration)
                 .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, getAlbumArt(songViewModel))
+                .putBitmap(MediaMetadata.METADATA_KEY_ART, getAlbumArt(songViewModel))
+                .putBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON, getAlbumArt(songViewModel))
                 .build()
 
         mediaSession?.setMetadata(metadata)
@@ -109,7 +110,7 @@ class PlayerViewModel @Inject constructor(private val playListViewModel: PlayLis
         mediaSession?.setPlaybackState(state)
     }
 
-    private fun getAlbumArt(songViewModel: SongViewModel): Bitmap {
+    private fun getAlbumArt(songViewModel: SongViewModel): Bitmap? {
         if (songViewModel.albumArt == null) {
             return defaultAlbumArt
         }
@@ -120,11 +121,5 @@ class PlayerViewModel @Inject constructor(private val playListViewModel: PlayLis
 
     private fun getDefaultAlbumArt(): Bitmap {
         return BitmapFactory.decodeResource(context?.resources, R.drawable.vinyl_logo)
-    }
-
-    private fun mediaPlayerAction(action: String) {
-        val intent = Intent(context, MediaPlayerService::class.java)
-        intent.action = action
-        context?.startService(intent)
     }
 }
